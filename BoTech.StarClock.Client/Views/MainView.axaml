@@ -1,0 +1,51 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:BoTech.StarClock.Client.ViewModels"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="BoTech.StarClock.Client.Views.MainView"
+             x:DataType="vm:MainViewModel">
+  <Design.DataContext>
+    <!-- This only sets the DataContext for the previewer in an IDE,
+         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+    <vm:MainViewModel />
+  </Design.DataContext>
+
+    <TabControl>
+        <TabItem>
+            <TabItem.Header>
+                <StackPanel>
+                    <avalonia:MaterialIcon Kind="StarBoxMultipleOutline"
+                                           Foreground="#317AF7"
+                                           Width="28"
+                                           Height="28"/>
+                    <TextBlock Classes="Tab" Text="Your Stars" />
+                </StackPanel>
+            </TabItem.Header>
+        </TabItem>
+        <TabItem>
+            <TabItem.Header>
+                <StackPanel>
+                    <avalonia:MaterialIcon Kind="HomeCircle" 
+                                           Foreground="#317AF7"
+                                           Width="28"
+                                           Height="28"/>
+                    <TextBlock Classes="Tab" Text="Home" />
+                </StackPanel>
+            </TabItem.Header>
+        </TabItem>
+        <TabItem>
+            <TabItem.Header>
+                <StackPanel>
+                    <avalonia:MaterialIcon Kind="Cog" 
+                                           Foreground="#317AF7"
+                                           Width="28"
+                                           Height="28"/>
+                    <TextBlock Classes="Tab" Text="Settings" />
+                </StackPanel>
+            </TabItem.Header>
+        </TabItem>
+    </TabControl>
+</UserControl>
