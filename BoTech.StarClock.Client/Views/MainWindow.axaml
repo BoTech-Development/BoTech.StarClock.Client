@@ -6,7 +6,7 @@
         xmlns:views="clr-namespace:BoTech.StarClock.Client.Views"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="BoTech.StarClock.Client.Views.MainWindow"
-        Icon="/Assets/avalonia-logo.ico"
+        Icon="/Assets/AppIconLogoSmall.png"
         Title="BoTech.StarClock.Client">
         <views:MainView />
 </Window>

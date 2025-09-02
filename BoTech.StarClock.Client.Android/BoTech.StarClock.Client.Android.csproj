@@ -9,13 +9,8 @@
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
         <AndroidPackageFormat>apk</AndroidPackageFormat>
         <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+        <AcceptAndroidSDKLicenses>true</AcceptAndroidSDKLicenses>
     </PropertyGroup>
-
-    <ItemGroup>
-        <AndroidResource Include="Icon.png">
-            <Link>Resources\drawable\Icon.png</Link>
-        </AndroidResource>
-    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Avalonia.Android"/>
@@ -27,5 +22,9 @@
 
     <ItemGroup>
         <ProjectReference Include="..\BoTech.StarClock.Client\BoTech.StarClock.Client.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <AvaloniaResource Include="Resources\drawable\Icon.png" />
     </ItemGroup>
 </Project>

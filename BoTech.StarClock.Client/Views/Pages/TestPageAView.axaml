@@ -1,0 +1,22 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:formFields="clr-namespace:CherylUI.Controls.FormFields;assembly=CherylUI"
+             xmlns:vm="clr-namespace:BoTech.StarClock.Client.ViewModels.Pages"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="BoTech.StarClock.Client.Views.Pages.TestPageAView"
+             x:DataType="vm:TestPageAViewModel">
+    <StackPanel>
+        <Button Command="{Binding BackCommand}">Back</Button>
+        <TextBlock FontWeight="Bold">Page A</TextBlock>
+        <TextBlock FontWeight="Bold" Text="{Binding NumberOfPage}"/>
+        <formFields:FormFieldAction Command="{Binding ShowPageACommand}" 
+                                    Title="Show Page A" 
+                                    IsEnabled="False"/>
+        <formFields:FormFieldAction Command="{Binding ShowPageBCommand}" 
+                                    Title="Show Page B" />
+        <formFields:FormFieldAction Command="{Binding ShowPageCCommand}" 
+                                    Title="Show Page C" />
+    </StackPanel>
+</UserControl>

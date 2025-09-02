@@ -20,8 +20,10 @@
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
         <PackageReference Include="Avalonia.ReactiveUI"/>
+        <PackageReference Include="BoTech.StarClock.Api.SharedModels" />
         <PackageReference Include="CherylUI" />
         <PackageReference Include="InTheHand.Net.Bluetooth" />
         <PackageReference Include="Material.Icons.Avalonia" />
+        <PackageReference Include="Newtonsoft.Json" />
     </ItemGroup>
 </Project>

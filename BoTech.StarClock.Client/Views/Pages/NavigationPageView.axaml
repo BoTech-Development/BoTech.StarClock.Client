@@ -1,0 +1,13 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:CherylUI.Controls;assembly=CherylUI"
+             xmlns:vm="clr-namespace:BoTech.StarClock.Client.ViewModels.Pages"
+             xmlns:controls1="clr-namespace:BoTech.StarClock.Client.Controls"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="BoTech.StarClock.Client.Views.Pages.NavigationPageView"
+             x:DataType="vm:NavigationPageViewModel">
+        <controls1:NavigationControl Name="NavigationController"
+            Content="{Binding FirstView}"/>
+</UserControl>

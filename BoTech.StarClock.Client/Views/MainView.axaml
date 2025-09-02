@@ -4,6 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:BoTech.StarClock.Client.ViewModels"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:pages="clr-namespace:BoTech.StarClock.Client.Views.Pages"
+             xmlns:controls="clr-namespace:CherylUI.Controls;assembly=CherylUI"
+             xmlns:customControls="clr-namespace:BoTech.StarClock.Client.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="BoTech.StarClock.Client.Views.MainView"
              x:DataType="vm:MainViewModel">
@@ -12,40 +15,50 @@
          to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
     <vm:MainViewModel />
   </Design.DataContext>
-
-    <TabControl>
-        <TabItem>
-            <TabItem.Header>
-                <StackPanel>
-                    <avalonia:MaterialIcon Kind="StarBoxMultipleOutline"
-                                           Foreground="#317AF7"
-                                           Width="28"
-                                           Height="28"/>
-                    <TextBlock Classes="Tab" Text="Your Stars" />
-                </StackPanel>
-            </TabItem.Header>
-        </TabItem>
-        <TabItem>
-            <TabItem.Header>
-                <StackPanel>
-                    <avalonia:MaterialIcon Kind="HomeCircle" 
-                                           Foreground="#317AF7"
-                                           Width="28"
-                                           Height="28"/>
-                    <TextBlock Classes="Tab" Text="Home" />
-                </StackPanel>
-            </TabItem.Header>
-        </TabItem>
-        <TabItem>
-            <TabItem.Header>
-                <StackPanel>
-                    <avalonia:MaterialIcon Kind="Cog" 
-                                           Foreground="#317AF7"
-                                           Width="28"
-                                           Height="28"/>
-                    <TextBlock Classes="Tab" Text="Settings" />
-                </StackPanel>
-            </TabItem.Header>
-        </TabItem>
-    </TabControl>
+  <controls:InteractiveContainer>
+      
+      <TabControl>
+          <TabItem >
+              <TabItem.Content>
+                  <customControls:NavigationControl Name="NavigationControllerYourStarsTab"
+                                                       Content="{Binding MyStarsPageView}"/>
+                  
+              </TabItem.Content>
+              <TabItem.Header>
+                  <StackPanel>
+                        <avalonia:MaterialIcon Kind="StarBoxMultipleOutline"
+                                               Foreground="#317AF7"
+                                               Width="28"
+                                               Height="28"/>
+                        <TextBlock Classes="Tab" Text="Your Stars" />
+                  </StackPanel>
+              </TabItem.Header>
+          </TabItem>
+          <TabItem>
+              <TabItem.Content>
+                  <ContentControl Content="{Binding NavigationPageView}"/>
+              </TabItem.Content>
+              <TabItem.Header>
+                  <StackPanel>
+                      <avalonia:MaterialIcon Kind="HomeCircle" 
+                                             Foreground="#317AF7"
+                                             Width="28"
+                                             Height="28"/>
+                      <TextBlock Classes="Tab" Text="Home" />
+                  </StackPanel>
+              </TabItem.Header>
+          </TabItem>
+          <TabItem>
+              <TabItem.Header>
+                  <StackPanel>
+                      <avalonia:MaterialIcon Kind="Cog" 
+                                             Foreground="#317AF7"
+                                             Width="28"
+                                             Height="28"/>
+                      <TextBlock Classes="Tab" Text="Settings" />
+                  </StackPanel>
+              </TabItem.Header>
+          </TabItem>
+      </TabControl>
+  </controls:InteractiveContainer>
 </UserControl>
