@@ -5,22 +5,33 @@
              xmlns:controls="clr-namespace:CherylUI.Controls;assembly=CherylUI"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:vm="clr-namespace:BoTech.StarClock.Client.ViewModels.Pages"
+             xmlns:formFields="clr-namespace:CherylUI.Controls.FormFields;assembly=CherylUI"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="BoTech.StarClock.Client.Views.Pages.DeviceSettingsPageView"
              x:DataType="vm:DeviceSettingsPageViewModel">
     <controls:SliverPage Header="Your Stars">
-        <controls:GroupBox Header="Basic Settings">
-            <StackPanel Orientation="Vertical">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock VerticalAlignment="Center">Star Name:</TextBlock>
-                    <TextBox Text="{Binding CurrentDeviceName}"/>
-                    <Button Classes="Secondary Small"
-                            Command="{Binding SaveNewDeviceNameCommand}">
-                        <avalonia:MaterialIcon Kind="Check"
-                                               Foreground="Green"/>
-                    </Button>
+        <StackPanel>
+            <controls:GroupBox Header="Basic Settings">
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock VerticalAlignment="Center">Star Name:</TextBlock>
+                        <TextBox Text="{Binding CurrentDeviceName}"/>
+                        <Button Classes="Secondary Small"
+                                Command="{Binding SaveNewDeviceNameCommand}">
+                            <avalonia:MaterialIcon Kind="Check"
+                                                   Foreground="Green"/>
+                        </Button>
+                    </StackPanel>
                 </StackPanel>
-            </StackPanel>
-        </controls:GroupBox>
+            </controls:GroupBox>
+            <controls:GroupBox Header="Image Settings">
+                <StackPanel Orientation="Vertical">
+                    <formFields:FormFieldAction Title="Manage Uploaded Images"
+                                                Command="{Binding ManageUploadedImagesCommand}"/>
+                    <formFields:FormFieldAction Title="Manage Slideshow"
+                                                Command="{Binding ManageSlideshowCommand}"/>
+                </StackPanel>
+            </controls:GroupBox>
+        </StackPanel>
     </controls:SliverPage>
 </UserControl>

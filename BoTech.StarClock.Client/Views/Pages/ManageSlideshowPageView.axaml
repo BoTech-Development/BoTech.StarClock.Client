@@ -1,0 +1,90 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:glassMorphism="clr-namespace:CherylUI.Controls.GlassMorphism;assembly=CherylUI"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:controls="clr-namespace:CherylUI.Controls;assembly=CherylUI"
+             xmlns:vm="clr-namespace:BoTech.StarClock.Client.ViewModels.Pages"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="BoTech.StarClock.Client.Views.Pages.ManageSlideshowPageView"
+             x:DataType="vm:ManageSlideshowPageViewModel">
+    <controls:SliverPage Header="Slideshow">
+        <StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Button CornerRadius="16"
+                        MinWidth="0"
+                        Padding="14,8,14,8">
+                    <StackPanel Orientation="Horizontal">
+                        <avalonia:MaterialIcon Kind="ImageAdd"
+                                           Foreground="White"/>
+                        <TextBlock>Add Image.</TextBlock>
+                    </StackPanel>
+                </Button>
+                <Button CornerRadius="16"
+                        MinWidth="0"
+                        Padding="14,8,14,8">
+                    <StackPanel Orientation="Horizontal">
+                        <avalonia:MaterialIcon Kind="Delete"
+                                               Foreground="White"/>
+                        <TextBlock>Delete all.</TextBlock>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        <ItemsControl>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="vm:SlideshowImageViewModel">
+                    <glassMorphism:GlassCard Margin="8,8">
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel Margin="5,0"
+                                        VerticalAlignment="Center">
+                                <Button CornerRadius="16"
+                                        MinWidth="0"
+                                        Padding="14,8,14,8"
+                                        Command="{Binding MoveImageForwardCommand}">
+                                    <avalonia:MaterialIcon Kind="ArrowTop"
+                                                           Foreground="White"/>
+                                </Button>
+                                <Button CornerRadius="16"
+                                        MinWidth="0"
+                                        Padding="14,8,14,8"
+                                        Command="{Binding MoveImageBackwardCommand}">
+                                    <avalonia:MaterialIcon Kind="ArrowBottom"
+                                                           Foreground="White"/>
+                                </Button>
+                            </StackPanel>
+                            <Border BorderThickness="2"
+                                    BorderBrush="Gray"
+                                    CornerRadius="8"
+                                    Width="60"
+                                    Height="60"
+                                    Margin="5,0">
+                                <Image Source="{Binding Image}"/>
+                            </Border>
+                   
+                            <Button Margin="0,0,0,0"
+                                    Padding="12,0"
+                                    Height="60"
+                                    Command="{Binding DuplicateImageCommand}">
+                                <avalonia:MaterialIcon Kind="ContentDuplicate"
+                                                       Foreground="White"
+                                                       Width="22"
+                                                       Height="22"/>
+                            </Button>
+                            <Button Margin="0,0,0,0"
+                                    Padding="12,0"
+                                    Height="60"
+                                    Command="{Binding RemoveImageCommand}">
+                                <avalonia:MaterialIcon Kind="Delete"
+                                                       Foreground="White"
+                                                       Width="22"
+                                                       Height="22"/>
+                            </Button>
+                        </StackPanel>
+                    </glassMorphism:GlassCard>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </StackPanel>
+    </controls:SliverPage>
+</UserControl>

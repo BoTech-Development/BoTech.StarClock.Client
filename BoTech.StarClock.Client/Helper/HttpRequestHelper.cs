@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using Newtonsoft.Json;
 
 namespace BoTech.StarClock.Client.Helper;
@@ -10,6 +12,25 @@ public class HttpRequestHelper
     public HttpRequestHelper(string baseUrl)
     {
         _baseUrl = baseUrl;
+    }
+
+    public HttpResponseMessage? HttpGetFile(string url, string fileName)
+    {
+        using (HttpClient client = new HttpClient())
+        {
+            client.BaseAddress = new Uri(_baseUrl);
+            HttpResponseMessage response = client.GetAsync(url).Result;
+            
+            response.EnsureSuccessStatusCode();
+
+            using (Stream stream = response.Content.ReadAsStreamAsync().Result)
+            using (FileStream fileStream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
+            {
+                stream.CopyTo(fileStream);
+            }
+            Console.WriteLine($"File downloaded to: {fileName}");
+            return response;
+        }
     }
     public (HttpResponseMessage? httpResponse, T? data) HttpGetJsonObject<T>(string url)
     {
@@ -94,6 +115,29 @@ public class HttpRequestHelper
         return null;
     }
     /// <summary>
+    /// Uploads a file from path to the web api.
+    /// </summary>
+    /// <param name="url"></param>
+    /// <param name="fileName"></param>
+    /// <returns></returns>
+    public HttpResponseMessage? HttpPostFile(string url, string fileName)
+    {
+        if (File.Exists(fileName))
+        {
+            using (var form = new MultipartFormDataContent())
+            {
+                // Read the file content
+                var fileContent = new ByteArrayContent(File.ReadAllBytesAsync(fileName).Result);
+                fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse("application/octet-stream");
+
+                // Add the file to the form data
+                form.Add(fileContent, "file", Path.GetFileName(fileName));
+                return HttpPost(url, form);
+            }
+        }
+        return null;
+    }
+    /// <summary>
     /// This method executes an HttpPost request to the given endpoint. <br/>
     /// If you like to use url param you can inject them into the url string.
     /// </summary>
@@ -121,6 +165,39 @@ public class HttpRequestHelper
                 catch (HttpRequestException e)
                 {
                     Console.WriteLine($" Post Request error: {e.Message}");
+                }
+            }
+        }
+        return null;
+    }
+    /// <summary>
+    /// This method executes an HttpDelete request to the given endpoint. <br/>
+    /// If you like to use url param you can inject them into the url string.
+    /// </summary>
+    /// <param name="url"></param>
+    /// <param name="content"></param>
+    /// <returns></returns>
+    public HttpResponseMessage? HttpDelete(string url)
+    {
+        if (_baseUrl != String.Empty)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(_baseUrl);
+                try
+                {
+                    Console.Write($"Performing Delete request: {_baseUrl + url}");
+                    HttpResponseMessage response = client.DeleteAsync(url).Result;
+
+                    // Ensure the response is successful
+                    response.EnsureSuccessStatusCode();
+                    
+                    Console.WriteLine($" Delete Response Status: { response.StatusCode } ");
+                    return response;
+                }
+                catch (HttpRequestException e)
+                {
+                    Console.WriteLine($" Delete Request error: {e.Message}");
                 }
             }
         }

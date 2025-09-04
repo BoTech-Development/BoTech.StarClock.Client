@@ -31,7 +31,7 @@ public class PagedDialog : ContentControl
     /// <summary>
     /// A Model which could contain all inputs that the user makes on specific pages.
     /// </summary>
-    public object DialogDataModel {get; set;}
+    public object? DialogDataModel {get; set;}
     /// <summary>
     /// All Views that can be displayed as pages.
     /// it is necessary to store all GenericDialogViews, because in this case the visual parent fill be the same. => No avalonia error
@@ -39,114 +39,105 @@ public class PagedDialog : ContentControl
     private List<GenericDialogView> _pageViews = new List<GenericDialogView>();
 
     private int _currentPageIndex;
-
+    
     public PagedDialog(List<UserControl> pageViews)
     {
         InitPages(pageViews);
         if(OnDialogInitialized != null)
             OnDialogInitialized.Invoke(this);
     }
-
+    private PagedDialog()
+    {
+        
+    }
+    /// <summary>
+    /// Creates an MessageBox with only one or more Buttons
+    /// </summary>
+    /// <param name="content"></param>
+    /// <param name="buttonType">Which Buttons</param>
+    /// <param name="actions"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    public static PagedDialog CreateOneDialogPage(UserControl content, OnePageButtonTypes buttonType, params Action[] actions)
+    {
+        PagedDialog dialog = new PagedDialog();
+        GenericDialogView view = new GenericDialogView(); 
+        switch (buttonType)
+        {
+            case OnePageButtonTypes.Ok:
+                if (actions.Length == 1)
+                {
+                    view.DataContext = new GenericDialogViewModel(content)
+                        .AddDialogButton("Ok", actions[0]);
+                    break;
+                }
+                else
+                    throw new ArgumentException("You must invoke this Method with one action for the ok button.");
+            case OnePageButtonTypes.OkCancel:
+                if (actions.Length == 2)
+                {
+                    view.DataContext = new GenericDialogViewModel(content)
+                        .AddDialogButton("Ok", actions[0])
+                        .AddDialogButton("Cancel", actions[1]);
+                    break;
+                }
+                else
+                    throw new ArgumentException("You must invoke this Method with two actions for the ok and cancel buttons.");
+            case OnePageButtonTypes.YesNo:
+                if (actions.Length == 2)
+                {
+                    view.DataContext = new GenericDialogViewModel(content)
+                        .AddDialogButton("Yes", actions[0])
+                        .AddDialogButton("No", actions[1]);
+                    break;
+                }
+                else
+                    throw new ArgumentException("You must invoke this Method two one actions for the Yes and No buttons.");
+            case OnePageButtonTypes.YesNoCancel:
+                if (actions.Length == 3)
+                {
+                    view.DataContext = new GenericDialogViewModel(content)
+                        .AddDialogButton("Yes", actions[0])
+                        .AddDialogButton("No", actions[1])
+                        .AddDialogButton("Cancel", actions[2]);
+                    break;
+                }
+                else
+                    throw new ArgumentException("You must invoke this Method three actions for the Yes, No and Cancel buttons.");
+        }
+        dialog._pageViews.Add(view);
+        dialog.ShowPage(0);
+        return dialog;
+    }
     private void InitPages(List<UserControl> pageViews)
     {
          int pageNumber = 0;
         foreach (var pageView in pageViews)
         {
-            
+            pageNumber++;
             GenericDialogViewModel genericDialogViewModel;
             // Is First Page?
-            if (pageNumber == 0)
+            if (pageNumber == 1)
             {
-                pageNumber++;
-                genericDialogViewModel = new GenericDialogViewModel()
-                {
-                    DialogButtons = new List<DialogButton>()
-                    {
-                        new DialogButton()
-                        {
-                            ButtonText = "Cancel",
-                            OnClickCommand = ReactiveCommand.Create(() =>
-                            {
-                                if (OnDialogCanceled != null)
-                                    OnDialogCanceled.Invoke();
-                                InteractiveContainer.CloseDialog();
-                            })
-                        },
-                        new DialogButton()
-                        {
-                            ButtonText = "Next",
-                            OnClickCommand = ReactiveCommand.Create(() =>
-                            {
-                                _currentPageIndex++;
-                                ShowPage(_currentPageIndex);
-                            })
-                        }
-                    },
-                    ContentOfTheDialog = pageView,
-                };
+                genericDialogViewModel = new GenericDialogViewModel(pageView)
+                    .AddDialogButton("Cancel", CloseDialog)
+                    .AddDialogButton("Next", ShowNextPage);
 
                 // Is last Page?
-            } else if (pageNumber == pageViews.Count - 1)
+            } else if (pageNumber == pageViews.Count)
             {
-                pageNumber++;
-                genericDialogViewModel = new GenericDialogViewModel()
-                {
-                    DialogButtons = new List<DialogButton>()
-                    {
-                        new DialogButton()
-                        {
-                            ButtonText = "Cancel",
-                            OnClickCommand = ReactiveCommand.Create(() =>
-                            {
-                                if (OnDialogCanceled != null)
-                                    OnDialogCanceled.Invoke();
-                                InteractiveContainer.CloseDialog();
-                            })
-                        },
-                        new DialogButton()
-                        {
-                            ButtonText = "Ok",
-                            OnClickCommand = ReactiveCommand.Create(() =>
-                            {
-                                if (OnDialogAccepted != null)
-                                    OnDialogAccepted.Invoke();
-                                InteractiveContainer.CloseDialog();
-                            })
-                        }
-                    },
-                    ContentOfTheDialog = pageView,
-                };
+
+                genericDialogViewModel = new GenericDialogViewModel(pageView)
+                    .AddDialogButton("Cancel", CloseDialog)
+                    .AddDialogButton("Ok", CloseDialogWithAccepted);
             }
             else // Some page in the middle => previous and next
             {
-                pageNumber++;
-                genericDialogViewModel = new GenericDialogViewModel()
-                {
-                    DialogButtons = new List<DialogButton>()
-                    {
-                        new DialogButton()
-                        {
-                            ButtonText = "Previous",
-                            OnClickCommand = ReactiveCommand.Create(() =>
-                            {
-                                _currentPageIndex--;
-                                ShowPage(_currentPageIndex);
-                            })
-                        },
-                        new DialogButton()
-                        {
-                            ButtonText = "Next",
-                            OnClickCommand = ReactiveCommand.Create(() =>
-                            {
-                                _currentPageIndex++;
-                                ShowPage(_currentPageIndex);
-                            })
-                        }
-                    },
-                    ContentOfTheDialog = pageView,
-                };
+                
+                genericDialogViewModel = new GenericDialogViewModel(pageView)
+                    .AddDialogButton("Previous", ShowLastPage)
+                    .AddDialogButton("Next", ShowNextPage);
             }
-
             if (pageView.DataContext is DialogPageBase vm)
             {
                 vm.Dialog = this;
@@ -158,7 +149,46 @@ public class PagedDialog : ContentControl
             });
         }
     }
-    public void ShowPage(int pageNumber)
+
+    public void ShowLastPage()
+    {
+        _currentPageIndex--;
+        if (!ShowPage(_currentPageIndex))
+        {
+            // undo everything
+            _currentPageIndex++; 
+            ShowPage(_currentPageIndex);
+        }
+    }
+    public void ShowNextPage()
+    {
+        _currentPageIndex++;
+        if (!ShowPage(_currentPageIndex))
+        {
+            // undo everything
+            _currentPageIndex--; 
+            ShowPage(_currentPageIndex);
+        }
+    }
+    public void CloseDialog()
+    {
+        if (OnDialogCanceled != null)
+            OnDialogCanceled.Invoke();
+        InteractiveContainer.CloseDialog();
+    }
+
+    private void CloseDialogWithAccepted()
+    {
+        if (OnDialogAccepted != null)
+            OnDialogAccepted.Invoke();
+        InteractiveContainer.CloseDialog();
+    }
+    /// <summary>
+    /// Shows the n Page
+    /// </summary>
+    /// <param name="pageNumber"></param>
+    /// <returns>true when the page could be displayed</returns>
+    public bool ShowPage(int pageNumber)
     {
         if (0 <= pageNumber && pageNumber < _pageViews.Count)
         {
@@ -170,9 +200,19 @@ public class PagedDialog : ContentControl
                     if (genericDialogViewModel.ContentOfTheDialog.DataContext is DialogPageBase vm)
                     {
                         vm.OnPageShow();
+                        return true;
                     }
                 }
             }
         }
+        return false;
+    }
+
+    public enum OnePageButtonTypes
+    {
+        Ok,
+        OkCancel,
+        YesNo,
+        YesNoCancel
     }
 }

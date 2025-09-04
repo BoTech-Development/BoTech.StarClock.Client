@@ -1,0 +1,49 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:BoTech.StarClock.Client.ViewModels.Pages"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:glassMorphism="clr-namespace:CherylUI.Controls.GlassMorphism;assembly=CherylUI"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="BoTech.StarClock.Client.Views.Pages.ManageUploadedImagesPageView"
+             x:DataType="vm:ManageUploadedImagesPageViewModel">
+     <RelativePanel>
+         <ItemsControl ItemsSource="{Binding UploadedImages}">
+             <ItemsControl.ItemsPanel>
+                 <ItemsPanelTemplate>
+                     <WrapPanel></WrapPanel>
+                 </ItemsPanelTemplate>
+             </ItemsControl.ItemsPanel>
+             <ItemsControl.ItemTemplate>
+                 <DataTemplate DataType="vm:UploadedImageViewModel">
+                     <glassMorphism:GlassCard Margin="8,8">
+                         <StackPanel>
+                             <Button Classes="Text">
+                                 <Image Source="{Binding Image}"
+                                        Width="192"
+                                        Height="192"/>
+                             </Button>
+                             <StackPanel>
+                                 <TextBlock Text="{Binding ImageInfo}"/>
+                                 <Button Command="{Binding DeleteImageCommand}">
+                                        <avalonia:MaterialIcon Kind="Delete"
+                                                               Foreground="White"/>
+                                 </Button>
+                             </StackPanel>
+                         </StackPanel>
+                     </glassMorphism:GlassCard>
+                 </DataTemplate>
+             </ItemsControl.ItemTemplate>
+         </ItemsControl>
+         <Button Classes="Small"
+                 Command="{Binding UploadImageCommand}"
+                 RelativePanel.AlignRightWithPanel="True"
+                 RelativePanel.Below="StarsList">
+                <avalonia:MaterialIcon Kind="ImagePlus"
+                                       Width="18"
+                                       Height="18"
+                                       Foreground="White"/>
+         </Button>
+     </RelativePanel>
+</UserControl>

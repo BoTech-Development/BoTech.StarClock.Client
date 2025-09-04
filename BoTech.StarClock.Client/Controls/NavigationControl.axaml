@@ -12,9 +12,11 @@
             <Setter Property="Template">
                 <ControlTemplate>
                     <StackPanel Orientation="Vertical">
-                        <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal"
+                                    Margin="0,20,0,0">
                             <Button Click="OnBackButtonClick">
-                                <avalonia:MaterialIcon Kind="ArrowLeft"/>
+                                <avalonia:MaterialIcon Kind="ArrowLeft"
+                                                       Foreground="White"/>
                             </Button>
                             <TextBlock Text="{TemplateBinding PageName}"/>
                         </StackPanel>

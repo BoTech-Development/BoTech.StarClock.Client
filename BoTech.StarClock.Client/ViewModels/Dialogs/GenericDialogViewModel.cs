@@ -42,33 +42,30 @@ public class GenericDialogViewModel : DialogPageBase
     /// All Buttons that are visible below the Content
     /// </summary>
     public List<DialogButton> DialogButtons { get; set;  } 
-   /* private bool _isHelpOptionEnabled;
-    public bool IsHelpOptionEnabled
-    {
-        get => _isHelpOptionEnabled;
-        set =>  this.RaiseAndSetIfChanged(ref _isHelpOptionEnabled, value);
-    }
-    private bool _isSaveOptionEnabled;
-    public bool IsSaveOptionEnabled 
-    {
-        get => _isSaveOptionEnabled;
-        set => this.RaiseAndSetIfChanged(ref _isSaveOptionEnabled, value); 
-    }
-    private bool _isCloseOptionEnabled;
-    public bool IsCloseOptionEnabled
-    {
-        get => _isCloseOptionEnabled;
-        set => this.RaiseAndSetIfChanged(ref _isCloseOptionEnabled, value);
-    }
-    public ReactiveCommand<Unit, Unit> CloseCommand { get; set; }
-    public ReactiveCommand<Unit, Unit> SaveCommand { get; set; }
-    public ReactiveCommand<Unit, Unit> HelpCommand { get; set; }*/
-
-    public GenericDialogViewModel()//(List<DialogButton> dialogButtons)
-    {
-        //DialogButtons = dialogButtons;
-    }
     
+    public GenericDialogViewModel()
+    {
+        DialogButtons = new List<DialogButton>();
+        _contentOfTheDialog = new TextBlock()
+        {
+            Text = "View Init."
+        };
+    }
+    public GenericDialogViewModel(Control contentOfTheDialog)
+    {
+        DialogButtons = new List<DialogButton>();
+        _contentOfTheDialog =  contentOfTheDialog;
+    }
+    public GenericDialogViewModel AddDialogButton(string buttonText, Action onClickAction, bool isEnabled = true)
+    {
+        DialogButtons.Add(new DialogButton()
+        {
+            ButtonText = buttonText,
+            IsEnabled = isEnabled,
+            OnClickCommand = ReactiveCommand.Create(onClickAction)
+        });
+        return this;
+    }
    
 }
 public class DialogButton : ViewModelBase

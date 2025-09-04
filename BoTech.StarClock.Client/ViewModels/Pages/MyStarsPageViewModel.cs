@@ -12,7 +12,9 @@ using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using BoTech.StarClock.Api.SharedModels;
 using BoTech.StarClock.Client.Helper;
+using BoTech.StarClock.Client.Helper.ApiClient;
 using BoTech.StarClock.Client.Models;
+using BoTech.StarClock.Client.Models.ApiClient;
 using BoTech.StarClock.Client.ViewModels.Dialogs;
 using BoTech.StarClock.Client.Views.Dialog;
 using BoTech.StarClock.Client.Views.Dialogs;
@@ -76,7 +78,7 @@ public class MyStarsPageViewModel : ViewModelBase
     /// Creates a new connection to each device and loads all infos from the star.<br/>
     /// The Action will be executed when the Progressbar pops up.
     /// </summary>
-    private bool ReconnectToKnownDeviceAction(object data, ProgressDialogViewModel vm)
+    private void ReconnectToKnownDeviceAction(object data, ProgressDialogViewModel vm)
     {
         vm.DialogSettings.Icon = MaterialIconKind.Loading;
         vm.DialogSettings.IconColor = Brushes.Blue;
@@ -91,10 +93,10 @@ public class MyStarsPageViewModel : ViewModelBase
             if (client != null)
             {
                 device.ApiClient = client;
-                string? newDeviceName = device.ApiClient.GetDeviceName().deviceName;
-                if (newDeviceName != null)
+                RequestResult<string> result = device.ApiClient.DeviceInfoClient.GetDeviceName();
+                if (result.Success && result.ParsedData != null)
                 {
-                    device.DeviceName = newDeviceName;
+                    device.DeviceName = result.ParsedData;
                     Devices.Add(new DeviceInfoViewModel()
                     {
                         DeviceInfo = device,
@@ -112,7 +114,6 @@ public class MyStarsPageViewModel : ViewModelBase
                         StatusInfo = "Can not get Device Name."
                     });
                 }
-
             }
             else // Show Error Message:
             {
@@ -124,7 +125,6 @@ public class MyStarsPageViewModel : ViewModelBase
                     StatusInfo = "Not connected."
                 });
             }
-
             vm.Value = index;
         }
         vm.DialogSettings.Icon = MaterialIconKind.Check;
@@ -134,7 +134,6 @@ public class MyStarsPageViewModel : ViewModelBase
         DialogButton? button = vm.DialogSettings.DialogButtons.Find(b => b.ButtonText == "Ok");
         if (button != null)
             button.IsEnabled = true;
-        return true;
     }
     /// <summary>
     /// Adds a new device to the list <see cref="Devices"/> when the connection was successfully
@@ -167,7 +166,7 @@ public class MyStarsPageViewModel : ViewModelBase
     /// <param name="data"></param>
     /// <param name="vm"></param>
     /// <returns></returns>
-    private bool AddDevice(object data, ProgressDialogViewModel vm)
+    private void AddDevice(object data, ProgressDialogViewModel vm)
     {
         vm.DialogSettings.Icon = MaterialIconKind.Loading;
         vm.DialogSettings.IconColor = Brushes.Blue;
@@ -195,23 +194,28 @@ public class MyStarsPageViewModel : ViewModelBase
             vm.DialogSettings.IconColor = Brushes.Orange;
             
             Console.WriteLine(e);
-            return false;
+            return;
         }
         vm.DialogSettings.Icon = MaterialIconKind.Check;
         vm.DialogSettings.IconColor = Brushes.Green;
         vm.ProgressText = "Finished.";
         vm.Value = 100;
-        return true;
     }
-
+    /// <summary>
+    /// Gets the name of the device if it is unknown or has already been connected to the app.<br/>
+    /// This Method also adds the new DeviceInfoViewModel to the Devices List
+    /// </summary>
+    /// <param name="ipAddress">Ip for saving it to the <see cref="Api.SharedModels.DeviceInfo"/> Model</param>
+    /// <param name="client">Api Client to invoke the specific endpoints</param>
+    /// <param name="vm">View Model for the progressbar</param>
     private void GetDeviceNameAndAdd(string ipAddress, ApiClient client, ProgressDialogViewModel vm)
     {
         DeviceInfo info;
-        vm.ProgressText = "Try to get device name from:  " + ipAddress;
-        (string? deviceName, HttpResponseMessage? message) requestResult = client.GetDeviceName();
-        if (requestResult.deviceName != null)
+        vm.ProgressText = "Try to get device name from:  " + ipAddress; 
+        RequestResult<string> requestResult = client.DeviceInfoClient.GetDeviceName();
+        if (requestResult.Success && requestResult.ParsedData != null)
         {
-            info = new DeviceInfo(ipAddress, requestResult.deviceName)
+            info = new DeviceInfo(ipAddress, requestResult.ParsedData)
             {
                 ApiClient = client
             };

@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Avalonia.Media;
+using Material.Icons;
 using ReactiveUI;
 
 namespace BoTech.StarClock.Client.ViewModels.Dialogs;
@@ -59,7 +63,7 @@ public class ProgressDialogViewModel : DialogPageBase
     /// The action that should be executed on Show. <br/>
     /// return value is not processed
     /// </summary>
-    public Func<object, ProgressDialogViewModel, bool> Action { get; set; }
+    public Action<object?, ProgressDialogViewModel>  Action { get; set; }
     public ProgressDialogViewModel()
     {
         PagedDialog.OnDialogInitialized += OnDialogInitialized;
@@ -68,11 +72,74 @@ public class ProgressDialogViewModel : DialogPageBase
 
     public override void OnPageShow()
     {
-        if(Dialog != null)
-            Action.Invoke(Dialog.DialogDataModel, this);
+        Thread actionThread;
+        if (Dialog != null)
+        {
+            actionThread = new Thread(() =>
+            {
+                Action.Invoke(Dialog.DialogDataModel, this);
+            });
+        }
         else
-            Action.Invoke("", this);
+        {
+            actionThread = new Thread(() =>
+            {
+                Action.Invoke("", this);
+            });
+        }
+        actionThread.Start();
     }
+
+    public void Next(int count, string progressText)
+    {
+        Value += count;
+        ProgressText = progressText;
+    }
+
+    public void UpdateProgressIntermediate(bool isIndeterminate, string progressText, IBrush iconColor,
+        MaterialIconKind iconKind)
+    {
+        if (DialogSettings != null)
+        {
+            DialogSettings.Icon = MaterialIconKind.Loading;
+            DialogSettings.IconColor = Brushes.Blue;
+        }
+
+        ProgressText = progressText;
+        IsIndeterminate = isIndeterminate;
+    }
+    public void UpdateProgress(int value, string progressText, IBrush? iconColor = null,
+    MaterialIconKind? iconKind = null)
+    {
+        if (DialogSettings != null)
+        {
+            if (iconColor == null && iconKind == null)
+            {
+                if (value < Maximum)
+                {
+                    DialogSettings.Icon = MaterialIconKind.Loading;
+                    DialogSettings.IconColor = Brushes.Blue;
+                }
+                else
+                {
+                    DialogSettings.Icon = MaterialIconKind.Check;
+                    DialogSettings.IconColor = Brushes.Green;
+                }
+            }
+            else if(iconKind != null && iconColor != null)
+            {
+                DialogSettings.IconColor = iconColor;
+                DialogSettings.Icon = (MaterialIconKind)iconKind;
+            }
+          
+        }
+        ProgressText = progressText;
+        Value = value;
+    }
+    /// <summary>
+    /// sets all buttons to disabled until the given action has been executed.
+    /// </summary>
+    /// <param name="dialog"></param>
     private void OnDialogInitialized(PagedDialog dialog)
     {
         UpdateDialogButtons(false);
