@@ -1,19 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 using System.Reactive;
-using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using BoTech.StarClock.Api.SharedModels.Slideshow;
+using BoTech.StarClock.Client.Controls;
 using BoTech.StarClock.Client.Helper;
 using BoTech.StarClock.Client.Helper.ApiClient;
 using BoTech.StarClock.Client.Models.ApiClient;
 using BoTech.StarClock.Client.ViewModels.Dialogs;
-using BoTech.StarClock.Client.Views;
 using BoTech.StarClock.Client.Views.Dialog;
 using BoTech.StarClock.Client.Views.Pages;
 using CherylUI.Controls;
@@ -22,20 +19,60 @@ using ReactiveUI;
 
 namespace BoTech.StarClock.Client.ViewModels.Pages;
 
-public class ManageUploadedImagesPageViewModel
+public class AddImageToSlideshowPageViewModel : ViewModelBase
 {
-    public ObservableCollection<UploadedImageViewModel> UploadedImages { get; set; } = new ObservableCollection<UploadedImageViewModel>();
-    public ReactiveCommand<Unit, Unit> UploadImageCommand { get; set; }
-    /// <summary>
-    /// necessary to access the api.
-    /// </summary>
-    private DeviceInfoViewModel _deviceInfo;
+    public ObservableCollection<SelectableImageViewModel> UploadedImages { get; set; } = new ObservableCollection<SelectableImageViewModel>();
+    public ReactiveCommand<Unit, Unit> AddImagesToSlideShowCommand { get; set; }
+    public List<SelectableImageViewModel> SelectedUploadedImages { get; set; } = new List<SelectableImageViewModel>();
+    private ApiClient _client;
     private string _imageCachePath = SystemPaths.GetBaseAppDataPath("Cache/UploadedImages/");
-    public ManageUploadedImagesPageViewModel(DeviceInfoViewModel model)
+    public AddImageToSlideshowPageViewModel(ApiClient apiClient)
     {
-        _deviceInfo = model;
-        UploadImageCommand = ReactiveCommand.Create(AddNewImage);
+        _client = apiClient;
+        AddImagesToSlideShowCommand = ReactiveCommand.Create(() =>
+        {
+            ProgressDialogViewModel.CreateProgressbarPage(AddImagesToSlideShow);
+        });
         ReloadAllImages();
+    }
+
+    private void AddImagesToSlideShow(object? data, ProgressDialogViewModel vm)
+    {
+        vm.UpdateProgressIntermediate(true, "Adding images to SlideShow", Brushes.Blue, MaterialIconKind.Loading);
+        if (SelectedUploadedImages.Count == 1)
+        {
+            RequestResult<bool> result = _client.ImageSlideshowClient.AddImageToSlideshow(SelectedUploadedImages[0].LocalImage.Id.ToString());
+            if (result.Success)
+            {
+                vm.Maximum = 100;
+                vm.UpdateProgress(100, "Added all Images.", Brushes.Green, MaterialIconKind.Check);
+                ClosePage();
+                return;
+            }
+            vm.UpdateProgressIntermediate(false, $"Error: {result.ResponseMessage}", Brushes.Orange, MaterialIconKind.Error);
+        }
+        else if (SelectedUploadedImages.Count > 1)
+        {
+            List<string> imageIds = new List<string>();
+            foreach (SelectableImageViewModel uploadedImage in SelectedUploadedImages) imageIds.Add(uploadedImage.LocalImage.Id.ToString());
+            RequestResult<bool> result = _client.ImageSlideshowClient.AddImageRangeToSlideshow(0, imageIds.ToArray());
+            if (result.Success)
+            {
+                vm.Maximum = 100;
+                vm.UpdateProgress(100, "Added all Images.", Brushes.Green, MaterialIconKind.Check);
+                ClosePage();
+                return;
+            }
+            vm.UpdateProgressIntermediate(false, $"Error: {result.ResponseMessage}", Brushes.Orange, MaterialIconKind.Error);
+        }
+    }
+
+    private void ClosePage()
+    {
+        Dispatcher.UIThread.Invoke(() =>
+        {
+            NavigationControl.Pop("NavigationControllerYourStarsTab");
+        });
     }
     /// <summary>
     /// reloads all images from the star
@@ -43,6 +80,7 @@ public class ManageUploadedImagesPageViewModel
     private void ReloadAllImages()
     {
         ProgressDialogViewModel.CreateProgressbarPage(ReloadAllImagesAction);
+        //progressVm.OnPageShow();
     }
     /// <summary>
     ///  reloads all images from the star and injects it into the <see cref="UploadedImages"/> List
@@ -55,7 +93,7 @@ public class ManageUploadedImagesPageViewModel
         UploadedImages.Clear();
         vm.UpdateProgressIntermediate(true, "Getting Images from Api...", Brushes.Blue, MaterialIconKind.Loading);
         vm.DisableDialogButton("Ok");
-        RequestResult<List<LocalImage>> result = _deviceInfo.DeviceInfo.ApiClient.ImageSlideshowClient.GetImageList();
+        RequestResult<List<LocalImage>> result = _client.ImageSlideshowClient.GetImageList();
         
         if (result.Success && result.ParsedData != null)
         {
@@ -65,12 +103,11 @@ public class ManageUploadedImagesPageViewModel
             {
                 vm.UpdateProgress(vm.Value + 1,$"Adding Images to the View and loading preview for Image {image.Id}", Brushes.Blue, MaterialIconKind.Loading);
                 
-                UploadedImageViewModel uploadedImage = new UploadedImageViewModel(_deviceInfo.DeviceInfo.ApiClient, this)
+                SelectableImageViewModel uploadedImage = new SelectableImageViewModel(this)
                 {
-                    ImageInfo = image.Id.ToString(),
                     LocalImage = image
                 };
-                AddImagePreviewToUploadedImage(uploadedImage, _deviceInfo.DeviceInfo.ApiClient);
+                AddImagePreviewToUploadedImage(uploadedImage, _client);
                 UploadedImages.Add(uploadedImage);
             }
             vm.UpdateProgressIntermediate(false, $"Finished.", Brushes.Green, MaterialIconKind.Check);
@@ -79,10 +116,8 @@ public class ManageUploadedImagesPageViewModel
         }
         vm.UpdateProgressIntermediate(false, $"Error: {result.ResponseMessage}", Brushes.Orange, MaterialIconKind.Error);
         vm.EnableDialogButton("Ok");
-        
     }
-
-    private void AddImagePreviewToUploadedImage(UploadedImageViewModel uploadedImage, ApiClient client)
+    private void AddImagePreviewToUploadedImage(SelectableImageViewModel uploadedImage, ApiClient client)
     {
         // The image is initially saved to disk because the Avalonia bitmap cannot be created directly from System.Drawing.Bitmap.
         if(!Directory.Exists(_imageCachePath)) Directory.CreateDirectory(_imageCachePath);
@@ -92,30 +127,6 @@ public class ManageUploadedImagesPageViewModel
             string imagePath = Path.Combine(_imageCachePath, uploadedImage.LocalImage.Id.ToString() + ".jpeg");
             uploadedImage.Image = new Bitmap(imagePath);
             File.Delete(imagePath);
-        }
-    }
-    
-    private void AddNewImage()
-    {
-        TopLevel? topLevel = ManageUploadedImagesPageView.TopLevel;
-       // IStorageProvider? provider = MainWindow.StorageProviderInstance;
-        if (topLevel != null)
-        {    
-            List<IStorageFile> files = topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions()
-            {
-                Title = "Please select an image to upload.",
-                AllowMultiple = true,
-                FileTypeFilter = [FilePickerFileTypes.ImageAll],
-            }).Result.ToList();
-            foreach (IStorageFile file in files)
-            {
-                RequestResult<string> result = _deviceInfo.DeviceInfo.ApiClient.ImageSlideshowClient.UploadImage(file.Path.AbsolutePath);
-                if (result.Success)
-                {
-                    // Update the View.
-                    ReloadAllImages();
-                }
-            }
         }
     }
 }

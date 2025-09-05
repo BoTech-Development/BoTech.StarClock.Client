@@ -2,17 +2,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="clr-namespace:BoTech.StarClock.Client.ViewModels.Pages"
+             xmlns:controls="clr-namespace:CherylUI.Controls;assembly=CherylUI"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:glassMorphism="clr-namespace:CherylUI.Controls.GlassMorphism;assembly=CherylUI"
-             xmlns:views="clr-namespace:BoTech.StarClock.Client.Views"
-             xmlns:controls="clr-namespace:CherylUI.Controls;assembly=CherylUI"
+             xmlns:pages="clr-namespace:BoTech.StarClock.Client.ViewModels.Pages"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="BoTech.StarClock.Client.Views.Pages.ManageUploadedImagesPageView"
-             x:DataType="vm:ManageUploadedImagesPageViewModel">
-    <controls:SliverPage Header="Uploaded Images"
-                                 MaxHeight="{Binding $parent[views:MainView].Bounds.Height}"
-                                 Height="400">
+             x:Class="BoTech.StarClock.Client.Views.Pages.AddImageToSlideshowPageView"
+             x:DataType="pages:AddImageToSlideshowPageViewModel">
+    <controls:SliverPage Header="Select Image(s).">
         <RelativePanel>
             <ItemsControl ItemsSource="{Binding UploadedImages}">
                 <ItemsControl.ItemsPanel>
@@ -21,7 +18,7 @@
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="vm:UploadedImageViewModel">
+                    <DataTemplate DataType="pages:SelectableImageViewModel">
                         <glassMorphism:GlassCard Margin="8,8">
                             <StackPanel>
                                 <Button Classes="Text">
@@ -29,26 +26,21 @@
                                            Width="192"
                                            Height="192"/>
                                 </Button>
-                                <StackPanel>
-                                    <TextBlock Text="{Binding ImageInfo}"/>
-                                    <Button Command="{Binding DeleteImageCommand}">
-                                            <avalonia:MaterialIcon Kind="Delete"
-                                                                   Foreground="White"/>
-                                    </Button>
-                                </StackPanel>
+                                <CheckBox IsChecked="{Binding IsSelected}"></CheckBox>
                             </StackPanel>
                         </glassMorphism:GlassCard>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
+            
             <Button Classes="Small"
-                    Command="{Binding UploadImageCommand}"
+                    Command="{Binding AddImagesToSlideShowCommand}"
                     RelativePanel.AlignRightWithPanel="True"
                     RelativePanel.Below="StarsList">
-                    <avalonia:MaterialIcon Kind="ImagePlus"
-                                           Width="18"
-                                           Height="18"
-                                           Foreground="White"/>
+                <avalonia:MaterialIcon Kind="ImagePlus"
+                                       Width="18"
+                                       Height="18"
+                                       Foreground="White"/>
             </Button>
         </RelativePanel>
     </controls:SliverPage>

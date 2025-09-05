@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using BoTech.StarClock.Api.SharedModels.Slideshow;
 using BoTech.StarClock.Client.Models.ApiClient;
+using Newtonsoft.Json;
 
 namespace BoTech.StarClock.Client.Helper.ApiClient;
 
@@ -71,6 +73,128 @@ public class ImageSlideshowApiClient(HttpRequestHelper httpRequestHelper)
     public RequestResult<bool> DeleteImage(Guid imageId)
     {
         HttpResponseMessage? httpResponse = _httpRequestHelper.HttpDelete($"/ImageSlideshow/DeleteImage?id={imageId}");
+        if (httpResponse != null)
+        {
+            if (httpResponse.StatusCode == HttpStatusCode.OK)
+            {
+                return new RequestResult<bool>(true, httpResponse, true);
+            }
+        }
+        return new RequestResult<bool>(false, httpResponse, false);
+    }
+    /// <summary>
+    /// Returns a list of all Images that are located in the Slidshow.
+    /// </summary>
+    /// <returns></returns>
+    public RequestResult<List<LocalImage>> GetSlideshowImages()
+    {
+        (HttpResponseMessage? httpResponse, List<LocalImage>? images) = _httpRequestHelper.HttpGetJsonObject<List<LocalImage>>("/ImageSlideshow/GetSlideshowImages");
+        if (httpResponse != null)
+        {
+            if (httpResponse.StatusCode == HttpStatusCode.OK && images != null)
+            {
+                return new RequestResult<List<LocalImage>>(true, httpResponse, images);
+            }
+        }
+        return new RequestResult<List<LocalImage>>(false, httpResponse, null);
+    }
+    /// <summary>
+    /// Deletes all Image refs from the Slideshow
+    /// </summary>
+    /// <returns></returns>
+    public RequestResult<bool> ClearSlideshow()
+    {
+        HttpResponseMessage? httpResponse = _httpRequestHelper.HttpDelete($"/ImageSlideshow/ClearSlideshow");
+        if (httpResponse != null)
+        {
+            if (httpResponse.StatusCode == HttpStatusCode.OK)
+            {
+                return new RequestResult<bool>(true, httpResponse, true);
+            }
+        }
+        return new RequestResult<bool>(false, httpResponse, false);
+    }
+    /// <summary>
+    /// Deletes an Image from the Slideshow list
+    /// </summary>
+    /// <param name="index"></param>
+    /// <returns></returns>
+    public RequestResult<bool> DeleteImageFromSlideshow(int index)
+    {
+        HttpResponseMessage? httpResponse = _httpRequestHelper.HttpDelete($"/ImageSlideshow/DeleteImageFromSlideshow?index={index}");
+        if (httpResponse != null)
+        {
+            if (httpResponse.StatusCode == HttpStatusCode.OK)
+            {
+                return new RequestResult<bool>(true, httpResponse, true);
+            }
+        }
+        return new RequestResult<bool>(false, httpResponse, false);
+    }
+    /// <summary>
+    /// Moves an Image through the slideshow Timeline.
+    /// </summary>
+    /// <param name="oldIndex">The old index of the Image</param>
+    /// <param name="newIndex">The destination index</param>
+    /// <returns></returns>
+    public RequestResult<bool> MoveImageTo(int oldIndex, int newIndex)
+    {
+        HttpResponseMessage? httpResponse = _httpRequestHelper.HttpPatch($"/ImageSlideshow/MoveImageTo?oldIndex={oldIndex}&newIndex={newIndex}", null);
+        if (httpResponse != null)
+        {
+            if (httpResponse.StatusCode == HttpStatusCode.OK)
+            {
+                return new RequestResult<bool>(true, httpResponse, true);
+            }
+        }
+        return new RequestResult<bool>(false, httpResponse, false);
+    }
+    /// <summary>
+    /// Creates a duplicate of the Image and Inserts it into the Slideshow Image list
+    /// </summary>
+    /// <param name="indexOfImageToDuplicate">The old index of the Image</param>
+    /// <returns></returns>
+    public RequestResult<bool> DuplicateImage(int indexOfImageToDuplicate)
+    {
+        HttpResponseMessage? httpResponse = _httpRequestHelper.HttpPatch($"/ImageSlideshow/DuplicateImage?indexOfImageToDuplicate={indexOfImageToDuplicate}", null);
+        if (httpResponse != null)
+        {
+            if (httpResponse.StatusCode == HttpStatusCode.OK)
+            {
+                return new RequestResult<bool>(true, httpResponse, true);
+            }
+        }
+        return new RequestResult<bool>(false, httpResponse, false);
+    }
+    /// <summary>
+    /// Adds only one Image to the Slideshow
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public RequestResult<bool> AddImageToSlideshow(string id)
+    {
+        HttpResponseMessage? httpResponse = _httpRequestHelper.HttpPatch($"/ImageSlideshow/AddImageToSlideshow?id={id}", null);
+        if (httpResponse != null)
+        {
+            if (httpResponse.StatusCode == HttpStatusCode.OK)
+            {
+                return new RequestResult<bool>(true, httpResponse, true);
+            }
+        }
+        return new RequestResult<bool>(false, httpResponse, false);
+    }
+    /// <summary>
+    /// Adds multiple Images to the Slideshow
+    /// </summary>
+    /// <param name="index"></param>
+    /// <param name="ids"></param>
+    /// <returns></returns>
+    public RequestResult<bool> AddImageRangeToSlideshow(int index, string[] ids)
+    {
+        var jsonContent = JsonConvert.SerializeObject(ids);
+        var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+        
+        HttpResponseMessage? httpResponse = _httpRequestHelper.HttpPatch($"/ImageSlideshow/AddImageToSlideshow?index={index}", content);
         if (httpResponse != null)
         {
             if (httpResponse.StatusCode == HttpStatusCode.OK)

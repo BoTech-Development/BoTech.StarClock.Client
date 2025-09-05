@@ -6,20 +6,20 @@
   <ItemGroup>
     <!-- Avalonia packages -->
     <!-- Important: keep version in sync! -->
-    <PackageVersion Include="Avalonia" Version="11.3" />
-    <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.3" />
-    <PackageVersion Include="Avalonia.Fonts.Inter" Version="11.3" />
-    <PackageVersion Include="Avalonia.Diagnostics" Version="11.3" />
-    <PackageVersion Include="Avalonia.Desktop" Version="11.3" />
-    <PackageVersion Include="Avalonia.iOS" Version="11.3" />
-    <PackageVersion Include="Avalonia.Browser" Version="11.3" />
-    <PackageVersion Include="Avalonia.Android" Version="11.3" />
-    <PackageVersion Include="Avalonia.ReactiveUI" Version="11.3" />
-    <PackageVersion Include="BoTech.StarClock.Api.SharedModels" Version="1.0.2-alpha" />
+    <PackageVersion Include="Avalonia" Version="11.3.5" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.3.5" />
+    <PackageVersion Include="Avalonia.Fonts.Inter" Version="11.3.5" />
+    <PackageVersion Include="Avalonia.Diagnostics" Version="11.3.5" />
+    <PackageVersion Include="Avalonia.Desktop" Version="11.3.5" />
+    <PackageVersion Include="Avalonia.iOS" Version="11.3.5" />
+    <PackageVersion Include="Avalonia.Browser" Version="11.3.5" />
+    <PackageVersion Include="Avalonia.Android" Version="11.3.5" />
+    <PackageVersion Include="Avalonia.ReactiveUI" Version="11.3.5" />
+    <PackageVersion Include="BoTech.StarClock.Api.SharedModels" Version="1.0.3-alpha" />
     <PackageVersion Include="CherylUI" Version="1.5.0" />
     <PackageVersion Include="InTheHand.Net.Bluetooth" Version="4.2.2" />
     <PackageVersion Include="Material.Icons.Avalonia" Version="2.4.1" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageVersion Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.1" />
+    <PackageVersion Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.17" />
   </ItemGroup>
 </Project>

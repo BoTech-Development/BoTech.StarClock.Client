@@ -88,7 +88,7 @@ public class HttpRequestHelper
         }
         return null;
     }
-    public HttpResponseMessage? HttpPatch(string url, HttpContent content)
+    public HttpResponseMessage? HttpPatch(string url, HttpContent? content)
     {
         if (_baseUrl != String.Empty)
         {

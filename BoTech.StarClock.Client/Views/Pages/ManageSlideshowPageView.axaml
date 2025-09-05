@@ -6,15 +6,19 @@
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:controls="clr-namespace:CherylUI.Controls;assembly=CherylUI"
              xmlns:vm="clr-namespace:BoTech.StarClock.Client.ViewModels.Pages"
+             xmlns:views="clr-namespace:BoTech.StarClock.Client.Views"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="BoTech.StarClock.Client.Views.Pages.ManageSlideshowPageView"
              x:DataType="vm:ManageSlideshowPageViewModel">
-    <controls:SliverPage Header="Slideshow">
+    <controls:SliverPage Header="Slideshow"
+                         MaxHeight="{Binding $parent[views:MainView].Bounds.Height}"
+                         Height="400">
         <StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Button CornerRadius="16"
                         MinWidth="0"
-                        Padding="14,8,14,8">
+                        Padding="14,8,14,8"
+                        Command="{Binding AddImageCommand}">
                     <StackPanel Orientation="Horizontal">
                         <avalonia:MaterialIcon Kind="ImageAdd"
                                            Foreground="White"/>
@@ -23,7 +27,8 @@
                 </Button>
                 <Button CornerRadius="16"
                         MinWidth="0"
-                        Padding="14,8,14,8">
+                        Padding="14,8,14,8"
+                        Command="{Binding ClearSlideshowCommand}">
                     <StackPanel Orientation="Horizontal">
                         <avalonia:MaterialIcon Kind="Delete"
                                                Foreground="White"/>
@@ -31,7 +36,7 @@
                     </StackPanel>
                 </Button>
             </StackPanel>
-        <ItemsControl>
+        <ItemsControl  ItemsSource="{Binding SlideshowImages}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="vm:SlideshowImageViewModel">
                     <glassMorphism:GlassCard Margin="8,8">

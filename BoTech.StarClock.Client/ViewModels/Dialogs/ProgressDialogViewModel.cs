@@ -2,6 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Media;
+using BoTech.StarClock.Client.Views.Dialog;
+using CherylUI.Controls;
 using Material.Icons;
 using ReactiveUI;
 
@@ -69,7 +71,21 @@ public class ProgressDialogViewModel : DialogPageBase
         PagedDialog.OnDialogInitialized += OnDialogInitialized;
         
     }
-
+    public static void CreateProgressbarPage(Action<object?, ProgressDialogViewModel> action)
+    {
+        ProgressDialogViewModel progressVm = new ProgressDialogViewModel();
+        progressVm.Action = action;
+        ProgressDialogView progressDialogView = new ProgressDialogView()
+        {
+            DataContext = progressVm
+        };
+        PagedDialog dialogView = PagedDialog.CreateOneDialogPage(progressDialogView, PagedDialog.OnePageButtonTypes.Ok, () =>
+        {
+            InteractiveContainer.CloseDialog();
+        });
+        InteractiveContainer.ShowDialog(dialogView);
+        progressVm.DialogSettings = dialogView.DataContext as GenericDialogViewModel;
+    }
     public override void OnPageShow()
     {
         Thread actionThread;
