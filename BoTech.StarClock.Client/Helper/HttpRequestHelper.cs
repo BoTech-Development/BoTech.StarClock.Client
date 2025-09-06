@@ -138,6 +138,27 @@ public class HttpRequestHelper
         return null;
     }
     /// <summary>
+    /// Uploads a file from path to the web api.
+    /// </summary>
+    /// <param name="url"></param>
+    /// <param name="fileName">The name of the File with the path</param>
+    /// <param name="content">The Content of the File.</param>
+    /// <returns></returns>
+    public HttpResponseMessage? HttpPostFile(string url, byte[] content,  string fileName)
+    {
+        using (var form = new MultipartFormDataContent())
+        {
+            // Read the file content
+            var fileContent = new ByteArrayContent(content);
+            fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse("application/octet-stream");
+
+            // Add the file to the form data
+            form.Add(fileContent, "file", Path.GetFileName(fileName));
+            return HttpPost(url, form);
+        }
+        return null;
+    }
+    /// <summary>
     /// This method executes an HttpPost request to the given endpoint. <br/>
     /// If you like to use url param you can inject them into the url string.
     /// </summary>

@@ -4,10 +4,12 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Reactive;
+using System.Threading;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using BoTech.StarClock.Api.SharedModels.Slideshow;
 using BoTech.StarClock.Client.Helper;
 using BoTech.StarClock.Client.Helper.ApiClient;
@@ -100,22 +102,34 @@ public class ManageUploadedImagesPageViewModel
         TopLevel? topLevel = ManageUploadedImagesPageView.TopLevel;
        // IStorageProvider? provider = MainWindow.StorageProviderInstance;
         if (topLevel != null)
-        {    
-            List<IStorageFile> files = topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions()
+        {
+            Thread addNewImageThread = new Thread(() =>
             {
-                Title = "Please select an image to upload.",
-                AllowMultiple = true,
-                FileTypeFilter = [FilePickerFileTypes.ImageAll],
-            }).Result.ToList();
-            foreach (IStorageFile file in files)
-            {
-                RequestResult<string> result = _deviceInfo.DeviceInfo.ApiClient.ImageSlideshowClient.UploadImage(file.Path.AbsolutePath);
-                if (result.Success)
+                List<IStorageFile> files = topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions()
                 {
-                    // Update the View.
-                    ReloadAllImages();
+                    Title = "Please select an image to upload.",
+                    AllowMultiple = true,
+                    FileTypeFilter = [FilePickerFileTypes.ImageAll],
+                }).Result.ToList();
+                foreach (IStorageFile file in files)
+                {
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        Stream stream = file.OpenReadAsync().Result;
+                        stream.CopyTo(ms);
+                        RequestResult<string> result = _deviceInfo.DeviceInfo.ApiClient.ImageSlideshowClient.UploadImage(file.Path.AbsolutePath, ms.ToArray());
+                        if (result.Success)
+                        {
+                            Dispatcher.UIThread.InvokeAsync(() =>
+                            {
+                                // Update the View.
+                                ReloadAllImages();
+                            });
+                        }
+                    }
                 }
-            }
+            });
+            addNewImageThread.Start();
         }
     }
 }

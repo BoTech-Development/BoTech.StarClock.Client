@@ -66,6 +66,24 @@ public class ImageSlideshowApiClient(HttpRequestHelper httpRequestHelper)
         return new RequestResult<string>(false, httpResponse, null);
     }
     /// <summary>
+    /// Uploads and Image to the device
+    /// </summary>
+    /// <param name="filename">The Filename of the Image with the path</param>
+    /// <param name="content">The Content of the File.</param>
+    /// <returns>Among other infos the new id of the file</returns>
+    public RequestResult<string> UploadImage(string filename, byte[] content)
+    {
+        HttpResponseMessage? httpResponse = _httpRequestHelper.HttpPostFile($"/ImageSlideshow/UploadImage",content, filename);
+        if (httpResponse != null)
+        {
+            if (httpResponse.StatusCode == HttpStatusCode.OK)
+            {
+                return new RequestResult<string>(true, httpResponse, httpResponse.Content.ReadAsStringAsync().Result);
+            }
+        }
+        return new RequestResult<string>(false, httpResponse, null);
+    }
+    /// <summary>
     /// Let the device delete an Image
     /// </summary>
     /// <param name="imageId">The id of the Image</param>
