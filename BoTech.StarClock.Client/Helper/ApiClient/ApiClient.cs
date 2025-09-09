@@ -30,12 +30,11 @@ public class ApiClient
     /// </summary>
     /// <param name="baseUrl">the url of the api</param>
     /// <returns>The instance of the client when a connection can be established and the error or success message.</returns>
-    public static (ApiClient? client, HttpResponseMessage? message) CreateApiClientFor(string baseUrl)
+    public static (ApiClient client, HttpResponseMessage? message) CreateApiClientFor(string baseUrl)
     {
         HttpRequestHelper requestHelper = new HttpRequestHelper(baseUrl);
         RequestResult<bool> result = TryToConnectToNewDevice(requestHelper);
-        if(result.ParsedData) return (new ApiClient(requestHelper), result.ResponseMessage);
-        return (null, result.ResponseMessage);
+        return (new ApiClient(requestHelper), result.ResponseMessage);
     }
     /// <summary>
     /// Check if the given Device is still reachable in this network.
@@ -45,16 +44,13 @@ public class ApiClient
     private static RequestResult<bool> TryToConnectToNewDevice(
         HttpRequestHelper requestHelper)
     {
-        (HttpResponseMessage? httpResponse, string? data) response = requestHelper.HttpGetString("/Status/TestConnection");
-        if(response.httpResponse != null)
-            if (response.httpResponse.StatusCode == HttpStatusCode.OK && response.data != null)
+        RequestResult<string> response = requestHelper.HttpGetString("/Status/TestConnection");
+        if(response.IsSuccess())
+            if (response.ResponseMessage.Content.ReadAsStringAsync().Result.Equals("All_Ok"))
             {
-                if (response.data.Equals("All_Ok"))
-                {
-                    return new RequestResult<bool>(true, response.httpResponse, true);
-                }
+                return new RequestResult<bool>(true, response.ResponseMessage, true, null);
             }
-        return new RequestResult<bool>(false, response.httpResponse, false);
+        return new RequestResult<bool>(false, response.ResponseMessage, false, response.Error);
     }
     /// <summary>
     /// Check if the Device is still reachable in this network.
@@ -62,7 +58,6 @@ public class ApiClient
     /// <returns></returns>
     public RequestResult<bool> TestConnection()
     {
-        RequestResult<bool> result = ApiClient.TryToConnectToNewDevice(this._httpRequestHelper);
-        return new RequestResult<bool>(result.ParsedData, result.ResponseMessage, result.ParsedData);
+        return ApiClient.TryToConnectToNewDevice(this._httpRequestHelper);
     }
 }

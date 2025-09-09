@@ -55,12 +55,12 @@ public class DeviceSettingsPageViewModel : ViewModelBase
     }
     private void SetNewDeviceName()
     {
-        RequestResult<bool> result = _infoViewModel.DeviceInfo.ApiClient.DeviceInfoClient.SetDeviceName(CurrentDeviceName);
-        if (result.ParsedData)
+        RequestResult<dynamic> result = _infoViewModel.DeviceInfo.ApiClient.DeviceInfoClient.SetDeviceName(CurrentDeviceName);
+        if (result.IsSuccess())
         {
             _infoViewModel.DeviceName = CurrentDeviceName;
         }
-        else
+        else // Set to the old Name
         {
             CurrentDeviceName = _infoViewModel.DeviceName;
         }

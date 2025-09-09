@@ -92,9 +92,10 @@ public class MyStarsPageViewModel : ViewModelBase
             (ApiClient? client, HttpResponseMessage? errorMessage) = ApiClient.CreateApiClientFor("http://" + device.IpAddress);
             if (client != null)
             {
+                // Hresult = -2146233088
                 device.ApiClient = client;
                 RequestResult<string> result = device.ApiClient.DeviceInfoClient.GetDeviceName();
-                if (result.Success && result.ParsedData != null)
+                if (result.IsSuccess())
                 {
                     device.DeviceName = result.ParsedData;
                     Devices.Add(new DeviceInfoViewModel()
@@ -104,7 +105,17 @@ public class MyStarsPageViewModel : ViewModelBase
                         StatusColor = Brushes.Green,
                         StatusInfo = "Connected."
                     });
-                }else // Can not get the Device Name
+                }else if(result.Error != null && result.Error.InnerException != null && result.Error.InnerException.HResult == -2147467259)
+                {
+                    Devices.Add(new DeviceInfoViewModel()
+                    {
+                        DeviceInfo = device,
+                        DeviceName = device.DeviceName,
+                        StatusColor = Brushes.Red,
+                        StatusInfo = "Not connected."
+                    });
+                }
+                else // Can not get the Device Name
                 {
                     Devices.Add(new DeviceInfoViewModel()
                     {

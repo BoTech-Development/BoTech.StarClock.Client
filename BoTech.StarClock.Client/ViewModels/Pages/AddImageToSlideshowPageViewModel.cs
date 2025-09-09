@@ -41,29 +41,29 @@ public class AddImageToSlideshowPageViewModel : ViewModelBase
         vm.UpdateProgressIntermediate(true, "Adding images to SlideShow", Brushes.Blue, MaterialIconKind.Loading);
         if (SelectedUploadedImages.Count == 1)
         {
-            RequestResult<bool> result = _client.ImageSlideshowClient.AddImageToSlideshow(SelectedUploadedImages[0].LocalImage.Id.ToString());
-            if (result.Success)
+            RequestResult<dynamic> result = _client.ImageSlideshowClient.AddImageToSlideshow(SelectedUploadedImages[0].LocalImage.Id.ToString());
+            if (result.IsSuccess())
             {
                 vm.Maximum = 100;
                 vm.UpdateProgress(100, "Added all Images.", Brushes.Green, MaterialIconKind.Check);
                 ClosePage();
                 return;
             }
-            vm.UpdateProgressIntermediate(false, $"Error: {result.ResponseMessage}", Brushes.Orange, MaterialIconKind.Error);
+            vm.UpdateProgressIntermediate(false, $"Error: {result.ResponseMessage} \n Exception: {result.Error}", Brushes.Orange, MaterialIconKind.Error);
         }
         else if (SelectedUploadedImages.Count > 1)
         {
             List<string> imageIds = new List<string>();
             foreach (SelectableImageViewModel uploadedImage in SelectedUploadedImages) imageIds.Add(uploadedImage.LocalImage.Id.ToString());
-            RequestResult<bool> result = _client.ImageSlideshowClient.AddImageRangeToSlideshow(0, imageIds.ToArray());
-            if (result.Success)
+            RequestResult<dynamic> result = _client.ImageSlideshowClient.AddImageRangeToSlideshow(0, imageIds.ToArray());
+            if (result.IsSuccess())
             {
                 vm.Maximum = 100;
                 vm.UpdateProgress(100, "Added all Images.", Brushes.Green, MaterialIconKind.Check);
                 ClosePage();
                 return;
             }
-            vm.UpdateProgressIntermediate(false, $"Error: {result.ResponseMessage}", Brushes.Orange, MaterialIconKind.Error);
+            vm.UpdateProgressIntermediate(false, $"Error: {result.ResponseMessage} \n Exception: {result.Error}", Brushes.Orange, MaterialIconKind.Error);
         }
     }
 
@@ -95,7 +95,7 @@ public class AddImageToSlideshowPageViewModel : ViewModelBase
         vm.DisableDialogButton("Ok");
         RequestResult<List<LocalImage>> result = _client.ImageSlideshowClient.GetImageList();
         
-        if (result.Success && result.ParsedData != null)
+        if (result.IsSuccess())
         {
             vm.Maximum = result.ParsedData.Count;
             vm.UpdateProgress(0,"Adding Images to the View and loading preview for Image.", Brushes.Blue, MaterialIconKind.Loading);
@@ -114,7 +114,7 @@ public class AddImageToSlideshowPageViewModel : ViewModelBase
             vm.EnableDialogButton("Ok");
             return;
         }
-        vm.UpdateProgressIntermediate(false, $"Error: {result.ResponseMessage}", Brushes.Orange, MaterialIconKind.Error);
+        vm.UpdateProgressIntermediate(false, $"Error: {result.ResponseMessage} \n Exception: {result.Error}", Brushes.Orange, MaterialIconKind.Error);
         vm.EnableDialogButton("Ok");
     }
     private void AddImagePreviewToUploadedImage(SelectableImageViewModel uploadedImage, ApiClient client)
@@ -122,7 +122,7 @@ public class AddImageToSlideshowPageViewModel : ViewModelBase
         // The image is initially saved to disk because the Avalonia bitmap cannot be created directly from System.Drawing.Bitmap.
         if(!Directory.Exists(_imageCachePath)) Directory.CreateDirectory(_imageCachePath);
         RequestResult<dynamic> result = client.ImageSlideshowClient.GetImagePreview(uploadedImage.LocalImage.Id.ToString(), 192,192, _imageCachePath + uploadedImage.LocalImage.Id + ".jpeg");
-        if (result.Success)
+        if (result.IsSuccess())
         {
             string imagePath = Path.Combine(_imageCachePath, uploadedImage.LocalImage.Id.ToString() + ".jpeg");
             uploadedImage.Image = new Bitmap(imagePath);

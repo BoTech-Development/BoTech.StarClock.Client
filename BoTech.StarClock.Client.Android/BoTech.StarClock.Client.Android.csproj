@@ -26,5 +26,6 @@
 
     <ItemGroup>
       <AvaloniaResource Include="Resources\drawable\Icon.png" />
+      <AvaloniaResource Include="Resources\drawable\Icon.png" />
     </ItemGroup>
 </Project>

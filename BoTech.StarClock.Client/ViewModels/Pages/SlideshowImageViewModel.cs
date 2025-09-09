@@ -72,7 +72,7 @@ public class SlideshowImageViewModel : ViewModelBase
         int index = _manageSlideshowPageViewModel.SlideshowImages.IndexOf(this);
         if (index != -1)
         {
-            RequestResult<bool> result = _client.ImageSlideshowClient.DeleteImageFromSlideshow(index);
+            RequestResult<dynamic> result = _client.ImageSlideshowClient.DeleteImageFromSlideshow(index);
             EnsureSuccess(result, vm);
             return;
         }
@@ -84,7 +84,7 @@ public class SlideshowImageViewModel : ViewModelBase
         int index = _manageSlideshowPageViewModel.SlideshowImages.IndexOf(this);
         if (index != -1)
         {
-            RequestResult<bool> result = _client.ImageSlideshowClient.MoveImageTo(index, index - 1);
+            RequestResult<dynamic> result = _client.ImageSlideshowClient.MoveImageTo(index, index - 1);
             EnsureSuccess(result, vm);
             return;
         }
@@ -96,7 +96,7 @@ public class SlideshowImageViewModel : ViewModelBase
         int index = _manageSlideshowPageViewModel.SlideshowImages.IndexOf(this);
         if (index != -1)
         {
-            RequestResult<bool> result = _client.ImageSlideshowClient.MoveImageTo(index, index + 1);
+            RequestResult<dynamic> result = _client.ImageSlideshowClient.MoveImageTo(index, index + 1);
             EnsureSuccess(result, vm);
             return;
         }
@@ -108,18 +108,18 @@ public class SlideshowImageViewModel : ViewModelBase
         int index = _manageSlideshowPageViewModel.SlideshowImages.IndexOf(this);
         if (index != -1)
         {
-            RequestResult<bool> result = _client.ImageSlideshowClient.DuplicateImage(index);
+            RequestResult<dynamic> result = _client.ImageSlideshowClient.DuplicateImage(index);
             EnsureSuccess(result, vm);
             return;
         }
         vm.UpdateProgressIntermediate(false, $"Error: This Image might not exist, \n in the Slideshow anymore.", Brushes.Orange, MaterialIconKind.Error);
     }
 
-    private void EnsureSuccess(RequestResult<bool> result, ProgressDialogViewModel vm)
+    private void EnsureSuccess(RequestResult<dynamic> result, ProgressDialogViewModel vm)
     {
-        if (!result.Success)
+        if (!result.IsSuccess())
         {
-            vm.UpdateProgressIntermediate(false, $"Error: {result.ResponseMessage}", Brushes.Orange, MaterialIconKind.Error);
+            vm.UpdateProgressIntermediate(false, $"Error: {result.ResponseMessage} \n Exception: {result.Error}", Brushes.Orange, MaterialIconKind.Error);
         }
         else
         {

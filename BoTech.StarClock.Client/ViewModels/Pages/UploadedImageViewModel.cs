@@ -53,8 +53,8 @@ public class UploadedImageViewModel : ViewModelBase
     {
         vm.IsIndeterminate = true;
         vm.ProgressText = $"Deleting image {LocalImage.Id}...";
-        RequestResult<bool> result = _client.ImageSlideshowClient.DeleteImage(LocalImage.Id);
-        if (result.Success && result.ParsedData != null)
+        RequestResult<dynamic> result = _client.ImageSlideshowClient.DeleteImage(LocalImage.Id);
+        if (result.IsSuccess())
         {
             _manageUploadedImages.ReloadAllImagesAction(data, vm);
             vm.ProgressText = "Finished!";
@@ -64,7 +64,7 @@ public class UploadedImageViewModel : ViewModelBase
             vm.DialogSettings.Icon = MaterialIconKind.Check;
             return;
         }
-        vm.ProgressText = "Error occured!";
+        vm.ProgressText = $"Error: {result.ResponseMessage} \n Exception: {result.Error}";
         vm.IsIndeterminate = false;
         vm.Maximum = 100;
         vm.Value = 100;

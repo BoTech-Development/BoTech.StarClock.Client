@@ -6,7 +6,7 @@
         xmlns:views="clr-namespace:BoTech.StarClock.Client.Views"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="BoTech.StarClock.Client.Views.MainWindow"
-        Icon="/Assets/AppIconLogoSmall.png"
+        Icon="/Assets/AppIconLogoV2.png"
         Title="BoTech.StarClock.Client">
         <views:MainView />
 </Window>

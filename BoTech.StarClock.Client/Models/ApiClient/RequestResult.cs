@@ -1,8 +1,9 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 
 namespace BoTech.StarClock.Client.Models.ApiClient;
 
-public class RequestResult<T>(bool success, HttpResponseMessage? message, T? data)
+public class RequestResult<T>(bool success, HttpResponseMessage? message, T? data, Exception? exception)
 {
     /// <summary>
     /// The response Message from the http request
@@ -16,4 +17,13 @@ public class RequestResult<T>(bool success, HttpResponseMessage? message, T? dat
     /// When the request was successful this var will be true.
     /// </summary>
     public bool Success { get; set; } = success;
+    /// <summary>
+    /// The Error of the request.
+    /// </summary>
+    public Exception? Error { get; set; } = exception;
+
+    public bool IsSuccess()
+    {
+        return Success && Error == null && ResponseMessage != null && ResponseMessage.IsSuccessStatusCode;
+    }
 }

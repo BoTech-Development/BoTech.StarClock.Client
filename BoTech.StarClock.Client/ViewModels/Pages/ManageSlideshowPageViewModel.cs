@@ -47,7 +47,7 @@ public class ManageSlideshowPageViewModel
     }
     private void ClearSlideshow()
     {
-        RequestResult<bool> result = _deviceInfo.DeviceInfo.ApiClient.ImageSlideshowClient.ClearSlideshow();
+        _deviceInfo.DeviceInfo.ApiClient.ImageSlideshowClient.ClearSlideshow();
     }
     public void LoadSlideshowImages()
     {
@@ -59,7 +59,7 @@ public class ManageSlideshowPageViewModel
         vm.UpdateProgressIntermediate(true, "Getting Images from Api...", Brushes.Blue, MaterialIconKind.Loading);
         vm.DisableDialogButton("Ok");
         RequestResult<List<LocalImage>> result = _deviceInfo.DeviceInfo.ApiClient.ImageSlideshowClient.GetSlideshowImages();
-        if (result.Success && result.ParsedData != null)
+        if (result.IsSuccess())
         {
             List<LocalImage> images = result.ParsedData;
             SlideshowImages.Clear();
@@ -77,7 +77,7 @@ public class ManageSlideshowPageViewModel
                     60,
                     60, 
                     _imageCachePath + image.Id + ".jpeg");
-                if (result2.Success)
+                if (result2.IsSuccess())
                 {
                     string imagePath = Path.Combine(_imageCachePath, image.Id.ToString() + ".jpeg");
                     viewModel.Image = new Bitmap(imagePath);
@@ -89,7 +89,7 @@ public class ManageSlideshowPageViewModel
             vm.EnableDialogButton("Ok");
             return;
         }
-        vm.UpdateProgressIntermediate(false, $"Error: {result.ResponseMessage}", Brushes.Orange, MaterialIconKind.Error);
+        vm.UpdateProgressIntermediate(false, $"Error: {result.ResponseMessage} \n Exception: {result.Error}", Brushes.Orange, MaterialIconKind.Error);
         vm.EnableDialogButton("Ok");
     }
 }
