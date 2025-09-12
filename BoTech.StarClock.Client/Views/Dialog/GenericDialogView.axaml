@@ -11,6 +11,7 @@
         <StackPanel Orientation="Horizontal">
             <materialIcons:MaterialIcon Kind="{Binding Icon}" 
                                         Foreground="{Binding IconColor}"
+                                        Animation="{Binding IconAnimation}"
                                         Width="64"
                                         Height="64"/>
             <ContentControl Content="{Binding ContentOfTheDialog}"></ContentControl>

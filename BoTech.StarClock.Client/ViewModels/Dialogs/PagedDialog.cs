@@ -105,10 +105,20 @@ public class PagedDialog : ContentControl
                 else
                     throw new ArgumentException("You must invoke this Method three actions for the Yes, No and Cancel buttons.");
         }
+        InjectGenericDialogViewModelIfNeeded((view.DataContext as GenericDialogViewModel)!, content);
         dialog._pageViews.Add(view);
         dialog.ShowPage(0);
         return dialog;
     }
+
+    private static void InjectGenericDialogViewModelIfNeeded(GenericDialogViewModel viewModel, UserControl content)
+    {
+        if (content.DataContext is DialogPageBase page)
+        {
+            page.DialogSettings = viewModel;
+        }
+    }
+    
     private void InitPages(List<UserControl> pageViews)
     {
          int pageNumber = 0;

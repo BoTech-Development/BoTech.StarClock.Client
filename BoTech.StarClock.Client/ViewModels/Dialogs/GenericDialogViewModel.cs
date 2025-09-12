@@ -28,8 +28,25 @@ public class GenericDialogViewModel : DialogPageBase
     /// </summary>
     public MaterialIconKind Icon
     {
-        get => _icon; 
-        set => this.RaiseAndSetIfChanged(ref _icon, value);
+        get => _icon;
+        set
+        {
+            if (value == MaterialIconKind.Loading) 
+                IconAnimation = MaterialIconAnimation.Spin;
+            else 
+                IconAnimation = MaterialIconAnimation.None;
+            this.RaiseAndSetIfChanged(ref _icon, value);
+        }
+    }
+
+    private MaterialIconAnimation _iconAnimation;
+    /// <summary>
+    /// The IconAnimation of the dialog. Will be set to spin when the Icon Kind is set to Loading.
+    /// </summary>
+    public MaterialIconAnimation IconAnimation
+    {
+        get => _iconAnimation; 
+        set => this.RaiseAndSetIfChanged(ref _iconAnimation, value);
     }
 
     private IBrush _iconColor = Brushes.White;

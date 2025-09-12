@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Media;
@@ -17,9 +18,26 @@ public class ProgressDialogViewModel : DialogPageBase
     /// </summary>
     public string ProgressText
     {
-        get => _progressText; 
-        set => this.RaiseAndSetIfChanged(ref _progressText, value);
+        get => _progressText;
+        set
+        {
+            string visualImprovedString = InsertNewLineEvery26Chars(value);
+            this.RaiseAndSetIfChanged(ref _progressText, visualImprovedString);
+        } 
     }
+    public static string InsertNewLineEvery26Chars(string input)
+    {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < input.Length; i += 26)
+        {
+            int length = Math.Min(26, input.Length - i);
+            result.Append(input.Substring(i, length));
+            if (i + 26 < input.Length) result.Append("\n");
+        }
+        return result.ToString();
+    }
+    
+
     private int _minimum = 0;
     /// <summary>
     /// Progressbar minimum value
@@ -84,7 +102,6 @@ public class ProgressDialogViewModel : DialogPageBase
             InteractiveContainer.CloseDialog();
         });
         InteractiveContainer.ShowDialog(dialogView);
-        progressVm.DialogSettings = dialogView.DataContext as GenericDialogViewModel;
     }
     public override void OnPageShow()
     {
@@ -117,16 +134,16 @@ public class ProgressDialogViewModel : DialogPageBase
     {
         if (DialogSettings != null)
         {
-            DialogSettings.Icon = MaterialIconKind.Loading;
-            DialogSettings.IconColor = Brushes.Blue;
+            DialogSettings.Icon = iconKind;
+            DialogSettings.IconColor = iconColor;
         }
-
         ProgressText = progressText;
         IsIndeterminate = isIndeterminate;
     }
     public void UpdateProgress(int value, string progressText, IBrush? iconColor = null,
     MaterialIconKind? iconKind = null)
     {
+        IsIndeterminate = false;
         if (DialogSettings != null)
         {
             if (iconColor == null && iconKind == null)
