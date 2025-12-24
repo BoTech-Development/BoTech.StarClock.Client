@@ -17,12 +17,11 @@
   </Design.DataContext>
   <controls:InteractiveContainer>
       
-      <TabControl>
-          <TabItem >
+      <TabControl SelectedIndex="1">
+          <TabItem>
               <TabItem.Content>
                   <customControls:NavigationControl Name="NavigationControllerYourStarsTab"
                                                        Content="{Binding MyStarsPageView}"/>
-                  
               </TabItem.Content>
               <TabItem.Header>
                   <StackPanel>
@@ -36,7 +35,7 @@
           </TabItem>
           <TabItem>
               <TabItem.Content>
-                  <ContentControl Content="{Binding NavigationPageView}"/>
+                  <pages:HomePageView></pages:HomePageView>
               </TabItem.Content>
               <TabItem.Header>
                   <StackPanel>
@@ -49,6 +48,9 @@
               </TabItem.Header>
           </TabItem>
           <TabItem>
+              <TabItem.Content>
+                  <pages:SettingsPageView></pages:SettingsPageView>
+              </TabItem.Content>
               <TabItem.Header>
                   <StackPanel>
                       <avalonia:MaterialIcon Kind="Cog" 

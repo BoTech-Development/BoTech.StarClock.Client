@@ -10,8 +10,7 @@ namespace BoTech.StarClock.Client.ViewModels;
 
 public class MainViewModel : ViewModelBase
 {
-   
-   public NavigationPageView NavigationPageView { get; set; }
+    public NavigationPageView NavigationPageView { get; set; }
     public MyStarsPageView MyStarsPageView { get; set; }
     public MainViewModel()
     {

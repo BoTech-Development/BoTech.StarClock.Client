@@ -1,0 +1,19 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:CherylUI.Controls;assembly=CherylUI"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="BoTech.StarClock.Client.Views.Pages.SettingsPageView">
+    <controls:SliverPage Header="Your Stars">
+        <StackPanel>
+            <TextBlock>Installed Version: <LineBreak/> v1.0.6.Alpha (12.09.2025)</TextBlock>
+            <Button Classes="Small" Click="OnOpenHomePage">
+                <TextBlock Text="Visit BoTech-Development's Page" />
+            </Button>
+            <TextBlock>
+                Copyright: <LineBreak/> www.botech.dev <LineBreak/> ©2025 All Rights Reserved!
+            </TextBlock>
+        </StackPanel>
+    </controls:SliverPage>
+</UserControl>

@@ -1,0 +1,18 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:CherylUI.Controls;assembly=CherylUI"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="BoTech.StarClock.Client.Views.Pages.HomePageView">
+    <controls:SliverPage Header="Welcome">
+        <StackPanel>
+            <Image Source="/Assets/AppIconLogo.png" Width="128"/>
+            <TextBlock FontSize="24" FontWeight="Bold" HorizontalAlignment="Center">Welcome to BoTech.StarClock</TextBlock>
+            <TextBlock>This App contains all controls for the <LineBreak/> BoTech.StarClock device. For More Info click here: </TextBlock>
+            <Button Classes="Small" Click="OnOpenProductPage">
+                <TextBlock Text="Visit Product Page" />
+            </Button>
+        </StackPanel>
+    </controls:SliverPage>
+</UserControl>
